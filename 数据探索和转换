@@ -1,0 +1,85 @@
+#### 一. 数据探索和转换
+
+* tf是一个开源软件库，它使用数据流图来进行数值计算。图中的节点标书数学操作，边表示节点间传递的
+多维矩阵(即tensors)。
+利用tf提供的各种函数，你可以实现前沿的卷积神经网络cnn来处理图片，或者实现递归/循环神经网络rnn来处理文字（当然cnn/rnn的威力不止如此，这里不用较真）。使用tf作为开发框架，你可以
+很容易的构建和使用自己的机器学习模型，而将计算的复杂性交由tf提供的数据流图处理。
+tf支持在各种异构环境上运行，从CPU到移动设备到高度并行的GPU，以及其他可以叫上名字的其他混合架构，如下图：
+pic1.
+
+### tf的主要数据结构-Tensors
+* tf使用tensor来管理它的数据。这里的Tensor是来自数学中的概念，是线性代数中向量和矩阵的泛化。
+在tf中，tensor指有类型的，多维矩阵，支持多种操作，建模为tensor对象。
+
+## tensor的属性： 秩，形状，类型
+* 正如之前提到的，tf使用tensor来表达所有数据，一个tensor具有静态类型和动态维度，你可以实时修改tensor的内部组织结构。另外，只有tensor类型对象才能在数据流图的节点之间传递。下面就逐个看看tensor的三个主要属性（以后再提到tensor，即指tensor对象）。
+
+# tensor 秩
+tensor的秩描述了tensor的维度信息。和矩阵的秩不同的是，tensor的秩指tensor维度的数量,并不能准确衡量tensor的行/列或者其他空间的对应描述。
+秩为1的tensor其实就是向量，秩为2的tensor是矩阵。2秩tensor可以使用类似t[i,j]的形式来访问某个元素，3秩tensor可以使用t[i,j,k]的形式来访问某个元素，以此类推。
+下面代码中，创建了一个tensor，放并访问它的组件：
+```
+import tensorflow as tf
+sess = tf.Session()
+t1 = tf.constant([[[1,2],[2,3],[3,4],[5,6]]])
+print(sess.run(t1))[0,3,0]
+```
+上面的tensor的秩为3，上述代码输出： 5
+
+下表是一个一些tensor的例子：
+pic2.
+
+# tensor 形状
+tf文档使用三个计数惯例来描述tensor的维度：秩，形状，维度数,举例如下表：
+pic3
+
+# tensor数据类型
+除了维度tensor还有一个固定的数据类型，tensor可以拥有如下类型中的一个：
+pic4.
+
+## 创建tensor
+可以制定参数自己创建tensor，也可以通过著名的numpy库来间接创建。下面代码中，首先创建一些
+numpy的数组，只有利用这些数组创建tensor。
+```
+import tensorflow as tf
+import numpy as np
+x = tf.constant(np.random.rand(32).astype(np.float32))
+y = tf.constant([1,2,3])
+
+```
+
+# numpy和tensor相互转换
+tf和numpy是可以互换使用的，只需要执行eval函数调用就可以返回numpy对象，与其他数值库交互了。
+note2.
+下面代码创建了两个numpy 数组，并将它们转化为tensor。
+```
+import tensorflow as tf
+import numpy as np
+x = tf.constant(np.random.rand(32).astype(np.float32))
+sess = tf.Session()
+x_data = np.array([[1,2,3],[3,2,6]])
+x = tf.convert_to_tensor(x_data)
+print(x)
+
+```
+convert_to_tensor将python的各种类型对象转换为tensor对象。它可以以：tensor对象，numpy数组，pyothon列表，python标量作为输入参数。
+上述输出： Tensor("Const_2:0", shape=(2, 3), dtype=int64)
+
+tf支持在python交互命令行执行，也可以使用ipython的命令行，这样的输出和notebook风格兼容，类似jupyter.
+在通过交互模式运行tf的Session时，最好使用InteractiveSession对象。与Session不同，InteractiveSession会将自己作为默认session，所以执行tensor的eval时候，或者run一个op的时候，就不用制定Session对象了。
+
+##tf的数据流图
+tf的数据流图是模型如何进行计算的符号表示，如下图：
+pic5.
+
+
+
+
+
+
+
+
+
+
+note1：矩阵的列秩：矩阵线性独立的列的最大数。
+note2: tensor对象只是某个操作结果的符号表示，它的结构内并不包含结果值，因此，需要执行eval函数才能获取真正的值，这点和执行Session.run(tensor_to_eval)效果一样。
