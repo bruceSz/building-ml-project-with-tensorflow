@@ -150,8 +150,47 @@ import tensorflow as tf
     sess  = tf.InteractiveSession()
     x = tf.constant([[1,2],[3,4]])
     print(tf.transpose(x).eval())
+    print()
 
 ```
+规约
+规约操作将操作应用到tensor的一个维度上，输出结果比输入的tensor少一个维度。
+规约操作包括：product,minimum,maximum,mean,all,any,accumulate_n等。
+```
+import tensorflow as tf
+sess = tf.InteractiveSession()
+x = tf.constant([[1,2,3],[3,2,1],[-1,-2,-3]])
+b_tensor = tf.constant([[True,False,True],[False,False,True],[True,False,False]])
+tf.reduce_prod(x)
+Out[27]: <tf.Tensor 'Prod:0' shape=() dtype=int32>
+print(tf.reduce_prod(x))
+Tensor("Prod_1:0", shape=(), dtype=int32)
+print(tf.reduce_prod(x).eval())
+-216
+print(tf.reduce_prod(x,reduction_indices=1).eval())
+
+```
+输出： [ 6  6 -6]
+
+
+tensor分段
+分段操作同样在tensor的某个维度上擦走哦，不同的是，输出tensor取决于某个索引行（index row）。如果该行某些值重复了，那么对应这些值对应tensor的其他维度共享这个值作为索引。分段操作应用到这些共享索引的`值`上. （类似于group By)
+如下图 ： pic6.
+索引数组大小和tensor的第0维对应数组大小相同。并且是间距为1 逐个递增的。
+
+```
+import tensorflow as tf
+sess = tf.InteractiveSession()
+seg_ids = tf.constant([0,1,1,2,2])
+ tens1 = tf.constant([[2,5,3,-5],[0,3,-2,5],[4,3,5,3],[6,1,4,0],[6,1,4,0]])
+tf.segment_sum(tens1,seg_ids).eval()
+
+
+```
+Out[51]: 
+array([[ 2,  5,  3, -5],
+       [ 4,  6,  3,  8],
+       [12,  2,  8,  0]], dtype=int32)
 
 
 
