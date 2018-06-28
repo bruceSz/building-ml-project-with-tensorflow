@@ -365,14 +365,61 @@ tensorflow 有自己的读取csv的方法，和类似pandas的库相比，该方
 * 4 如果要混合同类数据，使用pack函数。
 # iris 数据集
 iris花数据集/fisher的iris数据集是分类问题的标准数据集。是由1936年ronald fisher 在阐述线性判别分析时候给出的多元数据集。
-该数据集包含50个样本，每个样本四个特征，花萼的长和宽，花瓣的长和宽（厘米为单位）。通过组合这四中特征，fisher设计了线性判别模型来对花进行分类 。
+该数据集包含50个样本，每个样本四个特征，花萼的长和宽，花瓣的长和宽（厘米为单位）。通过组合这四中特征，fisher设计了线性判别模型来对花进行分类 。(1.8中pack改为stack)
 ```
+import tensorflow as tf
+sess = tf.Session()
+
+# combine multi filenames to one q.
+file_name_q = tf.train.string_input_producer(
+    tf.train.match_filenames_once("./data/iris.csv"),
+    shuffle=True
+)
+reader = tf.TextLineReader(skip_header_lines=1)
+k,v  = reader.read(file_name_q)
+record_d = [[0.],[0.],[0.],[0.],[""]]
+c1,c2,c3,c4,c5 = tf.decode_csv(v,
+                               record_defaults=record_d)
+fts = tf.stack([c1,c3,c3,c4])
+#tf.global_variables_initializer().run(session=sess)
+# under 1.8 global variables mean variable cross machines.
+tf.local_variables_initializer().run(session=sess)
+coord = tf.train.Coordinator()
+threads = tf.train.start_queue_runners(coord=coord,sess=sess)
+for iter in range(0,5):
+    example = sess.run([fts])
+    print (example)
+coord.request_stop()
+coord.join(threads)
 
 ```
 #读取图片数据
 tensorflow支持导入图片格式，这对面向图片的模型尤为重要。支持的图片格式为jpg,和png,内部表示为uint8 的多个tensor。每个图片通道，使用一个rank为2的tensor表示。
 # 读取和处理图片。下面例子会导入一个例子图片，做一些处理之后，保存为另外一个单独的图片。
 ```
+import tensorflow as tf
+sess = tf.Session()
+filename_q = tf.train.string_input_producer(
+    tf.train.match_filenames_once("./data/blue_jay.jpeg")
+)
+reader = tf.WholeFileReader()
+k,v = reader.read(filename_q)
+image = tf.image.decode_jpeg(v)
+flipImg = tf.image.encode_jpeg(tf.image.flip_up_down(image=image))
+flipImgLeftRight = tf.image.encode_jpeg(tf.image.flip_left_right(image))
+tf.local_variables_initializer().run(session=sess)
+coord = tf.train.Coordinator()
+threads = tf.train.start_queue_runners(coord=coord,sess=sess)
+example = sess.run(flipImgLeftRight)
+
+file = open("./data/flipupdown.jpeg","w+")
+file.write(flipImg.eval(session=sess))
+file.close()
+
+file = open("./data/flipleftright.jpeg","w+")
+file.write(flipImgLeftRight.eval(session=sess))
+file.close()
+
 ```
 # 使用标准tensorflow格式读取数据
 另外一种读取数据的方法是，首相将所有拥有的数据转化为tf官方格式，然后使用官方格式进行读取。这样的好处是更容易混合各种异构数据集和网络结构不同的数据。

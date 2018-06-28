@@ -26,6 +26,7 @@ class DataLoader(object):
             columns += ['flow_type_id']
             columns += ['flower_type']
             df = pd.DataFrame(c_data,columns=columns)
+            del df['flow_type_id']
             return df
         else:
             raise Exception("Unsupport dataset name: "+name)
