@@ -115,7 +115,11 @@ X,y = make_blobs(n_samples=100,n_features=2,centers=3,cluster_std=1.0,center_box
 本节，我们会使用具有两种特性的生成数据集： 1 数据集的线性可分；2 是否清晰的存在分类。
 ## 产生数据
 使用以下代码，我们会创建所以项目需要用到的数据,并首先对数据进行可视化：
-```
+```centers = [(-2,-2),(-2,1.5),(1.5,-2),(2,1.5)]
+X,y = make_blobs(n_samples=200,centers=centers,n_features=2,cluster_std=0.8,shuffle=False,random_state=42)
+plt.plot(np.array(centers).transpose()[0],np.array(centers).transpose()[1],marker='o',s=250)
+plt.show()
+
 ```
 2-pic4
 ## 模型架构
@@ -131,6 +135,9 @@ X,y = make_blobs(n_samples=100,n_features=2,centers=3,cluster_std=1.0,center_box
 函数，参见完整代码。
 ```
 ```
+
+## 环形数据上的kmeans
+通过对环形数据进行图形化分析，我们可以看到，此类数据很难使用一些简单的均值代表。就像下图
 
  
  
