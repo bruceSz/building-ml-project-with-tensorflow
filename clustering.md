@@ -83,6 +83,19 @@ tf目前没有提供生成假数据的工具，因此，我们使用sklearn库�
 调用方法
 生成blob数据集需要调用以下方法。
 ```
+import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
+
+if __name__ == "__main__":
+
+    with tf.Session() as sess:
+        ax = plt.subplot()
+        ax.plot(tf.random_normal([100]).eval(),
+                tf.random_normal([100]).eval(),'o')
+        ax.set_title('Sample  random  plot for tensorflow')
+        plt.show()
+
 ```
 这里n_samples是样本数，n_features是列数量或者数据特征数量。centers指分类个数。cluster_std指每个分类的标准差，center_box指当分类中心是随机指定的时候，分类中心所处的边界范围。shuffle指是否需要对样本进行洗牌，random_state是随机种子。
 # circle 数据集
@@ -90,6 +103,9 @@ tf目前没有提供生成假数据的工具，因此，我们使用sklearn库�
 调用方法
 生成该数据集调用以下方法。
 ```
+X,y = make_blobs(n_samples=100,n_features=2,centers=3,cluster_std=1.0,center_box=(-10,10),shuffle=True,
+           random_state=None)
+
 ```
 这里n_samples同样表示样本数，shuffle表示是否对样本洗牌，noise指圆圈数据上随机扰动个数。random_state是随机种子，factor表示不同圆圈的大小比例
 # 月亮数据集
